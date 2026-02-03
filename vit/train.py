@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from torchvision.datasets.mnist import MNIST
 
-from vit import Vit
+from vit.model import Vit
 np.random.seed(0)
 torch.manual_seed(0)
 

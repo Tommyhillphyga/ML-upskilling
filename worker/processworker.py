@@ -16,7 +16,7 @@ def cal_cube(numbers):
         print('Cube:', n*n*n)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     arr = [2,3,8,9]
 
     p1 = multiprocessing.Process(target=cal_square, args=(arr,))
