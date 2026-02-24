@@ -10,7 +10,6 @@ class Crawler:
     myssl.verify_mode = ssl.CERT_NONE
     errorLinks = set()
 
-
     def __init__(self, base_url):
         Crawler.base_url = base_url
 
@@ -36,6 +35,6 @@ class Crawler:
                 if (urljoin(Crawler.base_url, link.get('href')) not in linksToCrawl):
                     linksToCrawl.put(link.get('href'))
 
-                    
+
 
 

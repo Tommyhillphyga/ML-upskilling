@@ -14,6 +14,3 @@ def myThread():
     print("{}".format(threading.enumerate()))
 
 
-
-
-
