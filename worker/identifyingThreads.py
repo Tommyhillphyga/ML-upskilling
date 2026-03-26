@@ -14,3 +14,10 @@ def myThread():
     print("{}".format(threading.enumerate()))
 
 
+
+
+
+if __name__ == "__main__":
+    myThread()
+
+
