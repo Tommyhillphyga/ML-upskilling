@@ -73,6 +73,26 @@ class SiglipVisionEmbeddings(nn.Module):
         # [batch_size, num_patches, embed_dim]
         return embeddings
 
+class SigilpMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.fc1 = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.fc2 = nn.Linear(config.intemediate_size, config.hidden_size)
+
+    def forward (self, hidden_states: torch.Tensor) -> torch.Tensor:
+        # [batch_size, num_patches, embed_dim] -> [batch_size, num_patches, intermediate_size]
+        hidden_states = self.fc1(hidden_states)
+        # hidden states: [batch_size, num_patches, intermediate_size]
+        hidden_states = nn.functional.gelu(hidden_states, approximate='tanh')
+        # [batch_size, num_patches, intermediate_size] -> [batch_size, num_patches, embed_dim]
+        hidden_states = self.fc2(hidden_states)
+        return hidden_states
+    
+    
+
+
+
 
 
 class SiglipEncoderLayer(nn.Module):
@@ -97,7 +117,11 @@ class SiglipEncoderLayer(nn.Module):
         hidden_states = hidden_states + residual
         residual = hidden_states
         hidden_states = self.layer_norm2(hidden_states)
-        hidden_states = self.mlp(hidden_states)
+        hidden_states = self.mlp(hidden_states)# the input dimension does not change: [batch_size, num_patchs, embed_dim]
+        hidden_states = residual + hidden_states
+
+        return hidden_states
+    
 
 
         
