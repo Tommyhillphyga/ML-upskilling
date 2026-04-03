@@ -89,7 +89,86 @@ class SigilpMLP(nn.Module):
         hidden_states = self.fc2(hidden_states)
         return hidden_states
     
+
+class SiglipAttension(nn.Module):
+    """Multihead attention mechanism"""
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.embed_dim = config.hidden_size
+        self.num_heads = config.num_attention_heads
+        self.head_dim = self.embed_dim  // self.num_heads
+        self.scale = self.head_dim**-0.5
+        self.dropout = config.attention_dropout
+        self.training = False
+
+        self.k_proj = nn.Linear(self.embed_dim, self.embed_dim)
+        self.v_proj = nn.Linear(self.embed_dim, self.embed_dim)
+        self.q_proj = nn.Linear(self.embed_dim, self.embed_dim)
+        self.out_proj = nn.Linear(self.embed_dim, self.embed_dim)
+
+    def forward (self,
+                 hidden_states: torch.Tensor,
+                 ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        # hidden states: [batch_size, num_patches, embed_dim]
+        batch_size, seq_len, _ = hidden_states.size()
+
+        #size of the query, key and value is [batch_size, num_patches, embed_dim]
+        query_states = self.q_proj(hidden_states)
+        key_states = self.k_proj(hidden_states)
+        value_states = self.v_proj(hidden_states)
+
+        # reshape the query, key and value to [batch_size, num_heads, num_patches, head_dim]
+        query_states = query_states.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        key_states = key_states.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        value_states = value_states.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+
+        # attn_weights: [batch_size, num_heads, num_patches, num_patches]
+        attn_weights = (torch.matmul(query_states, key_states.transpose(2, 3)) * self.scale)
+
+        if attn_weights.size() != (batch_size, self.num_heads, seq_len, seq_len):
+            raise ValueError(
+                f"Attention weights should be of size {(batch_size, self.num_heads, seq_len, seq_len)}, but it is"
+                f"{attn_weights.size()}"
+            )
+        # Apply the softmax row-wise attn_weight: [batch_size, num_heads, num_patchs, num_patches]
+        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
+        # Apply dropout only during training
+        attn_weights = nn.functional.dropout(attn_weights, p=self.dropout, training = self.training)
+        # multiply attention weight by the value matrix: [batch_size, num_heads, num_patchs, head_dim]
+        attn_output = torch.matmul(attn_weights, value_states)
+
+        if attn_output.size() != (batch_size, self.num_heads, seq_len, self.head_dim):
+            raise ValueError(
+                f"Attention output should be of size {(batch_size, self.num_heads, seq_len, self.head_dim)}, but it is"
+                f"{attn_output.size()}"
+            )
+        
+        # [batch_size, num_heads, num_patches, head_dim] -> [batch_size, num_patches. num_heads, head_dim]
+        attn_output = attn_output.transpose(1, 2).contiguous()
+        # [batch_size, num_patches. num_heads, head_dim] -> [batch_size, num_patches, embed_dim]
+        attn_output = attn_output.reshape(batch_size, seq_len, self.embed_dim) # This reshape is performing the function of concatenating the attension heads
+
+        # Multiple by the Wo weight to perform the final contextualization
+        attn_output = self.out_proj(attn_output)
+
+        return attn_output, attn_weights
     
+     
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
 
 
 
