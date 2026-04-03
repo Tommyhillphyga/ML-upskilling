@@ -73,7 +73,7 @@ class SiglipVisionEmbeddings(nn.Module):
         # [batch_size, num_patches, embed_dim]
         return embeddings
 
-class SigilpMLP(nn.Module):
+class SiglipMLP(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -90,7 +90,7 @@ class SigilpMLP(nn.Module):
         return hidden_states
     
 
-class SiglipAttension(nn.Module):
+class SiglipAttention(nn.Module):
     """Multihead attention mechanism"""
     def __init__(self, config):
         super().__init__()
@@ -153,11 +153,29 @@ class SiglipAttension(nn.Module):
         attn_output = self.out_proj(attn_output)
 
         return attn_output, attn_weights
+
+
+
+class SiglipEncoder(nn.Module):
+    def __init__(self, config: SiglipVisionConfig):
+        super().__init__()
+
+        self.config = config
+        self.layers = nn.ModuleList(
+            [SiglipEncoderLayer(config) for _ in range(config.num_hidden_layer)]
+        )
+
+    def forward (self,
+                  input_embeds: torch.Tensor
+                  ) -> torch.Tensor:
+        # input_embeds: [batch_size, num_patches, embed_dim]
+        hidden_states = input_embeds
+        for encoder_layer in self.layers:
+            # hidden states: [batch_size, num_patches, embed_dim] the shape does not change after each layer
+            hidden_states = encoder_layer(hidden_states=hidden_states)
+        
+        return hidden_states
     
-     
-
-
-
 
 
 
@@ -166,12 +184,6 @@ class SiglipAttension(nn.Module):
 
 
         
-
-
-
-
-
-
 
 
 class SiglipEncoderLayer(nn.Module):
