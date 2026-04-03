@@ -173,7 +173,6 @@ class SiglipEncoder(nn.Module):
         for encoder_layer in self.layers:
             # hidden states: [batch_size, num_patches, embed_dim] the shape does not change after each layer
             hidden_states = encoder_layer(hidden_states=hidden_states)
-        
         return hidden_states
     
 
