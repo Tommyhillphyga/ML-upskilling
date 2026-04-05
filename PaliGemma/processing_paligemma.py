@@ -28,11 +28,28 @@ def rescale(
     return rescaled_image
 
 
+def normalize(
+        image: np.ndarray,
+        mean:Union[float, Iterable[float]],
+        std: Union[float, Iterable[float]],
+) -> np.ndarray:
+    mean = np.array(mean, dtype=image.dtype)
+    std = np.array(std, dtype = image.dtype)
+    image = (image - mean) / std
+    return image
+
+
+def add_image_tokens_to_prompt(
+        prefix_prompt, bos_token, image_seq_len, image_token
+):
+    return f"{image_token * image_seq_len}{bos_token}{prefix_prompt}\n"
+
+
 def process_images(
         images: List[Image.Image],
         size:Dict[str, int] = None,
         resample: Image.Resampling = None,
-        rescale_factor:float = None,
+        rescale_factor: float = None,
         image_mean: Optional[Union[float, List[float]]] = None,
         image_std: Optional[Union[float, List[float]]] = None,
 
@@ -45,21 +62,13 @@ def process_images(
     # convert each image to a numpy array
     images = [np.array(image) for image in images]
     # rescale the pixel values to be in range [0, 1]
-    images = [rescale(image, scale=scale_factor) for image in images]
+    images = [rescale(image, scale=rescale_factor) for image in images]
     # Normalize the images to ahve mean 0 and standard deviation 1
     images = [normalize(image, mean=image_mean, std=image_std) for image in images]
     # move the channel dimension to the first dimension. THe model expects images in the format [channel, height, width]
     images = [image.transpose(2,0,1) for image in images]
 
     return images  
-
-
-
-
-
-
-
-
 
 
 class PaliGemmaProcessor:
@@ -114,7 +123,7 @@ class PaliGemmaProcessor:
         # prepend a 'self.image_seq_length' number of images tokens to the prompt
         input_strings = [
             add_image_tokens_to_prompt(
-                prefix_prompt,
+                prefix_prompt = prompt, 
                 bos_token = self.tokenizer.bos_token,
                 image_seq_len = self.image_seq_length,
                 image_token = self.IMAGE_TOKEN,
@@ -134,4 +143,4 @@ class PaliGemmaProcessor:
 
         return return_data        
         
-        
+    
