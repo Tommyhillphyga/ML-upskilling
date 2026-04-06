@@ -51,4 +51,14 @@ class PaliGemmaForConditionalGeneration(nn.Module):
         )
         
 
+        outputs = self.language_model(
+            attention_mask = attention_mask,
+            position_ids = position_ids,
+            inputs_embeds = inputs_embeds,
+            kv_cache = kv_cache,
+
+        )
+
+        return outputs
+
         
