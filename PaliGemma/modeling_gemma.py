@@ -6,7 +6,50 @@ import math
 from modeling_siglip import SiglipVisionConfig, SiglipVisionModel
 
 
+class GemmaConfig():
+     
+     def __init__(
+               
+               self,
+               vocab_size,
+               hidden_size,
+               intermediate_size,
+               num_hidden_layers,
+               num_attention_heads,
+               num_key_value_heads,
+               head_dim = 256,
+               max_position_embeddings = 8192,
+               rms_norm_eps = 2e-6,
+               rope_theta = 10000.0, # used to the rotary positional encoding which is also the base frequency of the RoPE.
+               attention_bias = False,
+               attention_dropout = 0.0,
+               pad_token_ids = None,
+               **kwargs,
+        ):
+            super().__init__()
+            self.vocab_size = vocab_size
+            self.hidden_size = hidden_size
+            self.intermediate_size = intermediate_size
+            self.num_hidden_layers = num_hidden_layers
+            self.num_attention_heads = num_attention_heads
+            self.num_key_value_heads = num_key_value_heads
+            self.head_dim = head_dim
+            self.max_position_embeddings = max_position_embeddings
+            self.rms_norm_eps = rms_norm_eps
+            self.rope_theta = rope_theta
+            self.attention_bias = attention_bias
+            self.attention_dropout = attention_dropout
+            self.pad_token_ids = pad_token_ids
 
+
+          
+        
+          
+          
+          
+          
+          
+    
 class PaliGemmaConfig():
 
     def __init__(
@@ -59,6 +102,24 @@ class PaliGemmaForConditionalGeneration(nn.Module):
     def tie_weights(self):
         return self.language_model.tie_weights()
     
+
+    def _merge_input_ids_with_image_features(
+              self,
+              image_features: torch.Tensor,
+              input_embeds: torch.Tensor,
+              input_ids: torch.Tensor,
+              attention_mask: torch.Tensor,
+              kv_cache: Optional[KVCache] = None,
+    ):
+         
+         
+         
+    
+
+
+
+
+
     def forward (
             self, 
             input_ids: torch.LongTensor = None,
@@ -87,7 +148,6 @@ class PaliGemmaForConditionalGeneration(nn.Module):
 
         )
         
-
         outputs = self.language_model(
             attention_mask = attention_mask,
             position_ids = position_ids,
