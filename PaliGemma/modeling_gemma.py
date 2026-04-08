@@ -75,8 +75,18 @@ class PaliGemmaConfig():
             self.text_config.num_image_tokens = (self.vision_config.image_size // self.vision_config.patch_size)**2
             self.vision_config.projection_dim = projection_dim
 
-        
-        
+
+
+class PaliGemmaMultiModalProjector(nn.Module):
+    def __init__(self, config: PaliGemmaConfig):
+        super().__init__()
+        self.linear = nn.Linear(config.vision_config.hidden_size, config.vision_config.projection_dim, bias = True)
+
+    def forward(self, image_features):
+        # [batch_size, num_patches, embed_dim] -> [batch_size, num_patches, projection_dim]
+        hidden_states = self.linear(image_features)
+        return hidden_states
+    
 
 class PaliGemmaForConditionalGeneration(nn.Module):
 
@@ -180,14 +190,6 @@ class PaliGemmaForConditionalGeneration(nn.Module):
             return final_embedding, causal_mask, position_ids
                  
                  
-                 
-
-        
-
-
-
-
-
     def forward (
             self, 
             input_ids: torch.LongTensor = None,
@@ -225,5 +227,6 @@ class PaliGemmaForConditionalGeneration(nn.Module):
         )
 
         return outputs
+    
 
-        
+
