@@ -93,8 +93,27 @@ class GemmaRMSNorm(nn.Module):
         # Llama does x.to(float16) * w whlist Gemma is (x * w).to(float16)
         output = output * (1.0 + self.weight.float())
         return output.type_as(x)
+    
 
+class GemmaMLP(nn.Module):
+     
+     def __init__(self, config):
+          super().__init__()
+          self.config = config
+          self.hidden_size = config.hidden_size
+          self.intermediate_size = config.intermediate_size
+          self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias = False)
+          self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias = False)
+          self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias = False)
 
+     def forward(self, x):
+          y = self.gate_proj(x)
+          y = torch.gelu(y, approximate='tanh')
+          j = self.up_proj(x)
+          z = y * j
+          z = self.down_proj(z)
+          return z
+     
 
 class GemmaDecoderLayer(nn.Module):
      def __init__(self, config: GemmaConfig, layer_idx: int):
@@ -106,7 +125,7 @@ class GemmaDecoderLayer(nn.Module):
           self.input_layernorm = GemmaRMSNorm(config.hidden_size, eps= config.rms_norm_eps)
           self.post_attention_layernorm = GemmaRMSNorm(config.hidden_size, eps= config.rms_norm_eps)
 
-    def forward(
+     def forward(
             self,
             hidden_states:torch.Tensor,
             attention_mask: Optional[torch.Tensor] = None, 
@@ -138,13 +157,6 @@ class GemmaDecoderLayer(nn.Module):
             hidden_states = residual + hidden_states
             
             return hidden_states
-
-
-
-     
-     
-
-
 
 
 class GemmaModel(nn.Module):
