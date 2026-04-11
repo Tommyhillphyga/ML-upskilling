@@ -115,6 +115,60 @@ class GemmaMLP(nn.Module):
           return z
      
 
+class GemmaAttention(nn.Module):
+     def __init__(self, config: GemmaConfig, layer_idx: Optional[int] = None):
+          super().__init__()
+          self.config = config
+          self.layer_idx = layer_idx
+
+          self.attention_dropout = config.attention_dropout
+          self.hidden_size = config.hidden_size
+          self.num_heads = config.num_attention_heads
+          self.head_dim = config.head_dim
+          self.num_key_value_heads = config.num_key_value_heads
+          self.num_key_value_group = config.num_heads // self.num_key_value_heads
+          self.max_position_embeddings = config.max_position_embeddings
+          self.rope_theta = config.rope_theta
+          self.is_causal = True
+
+          assert self.hidden_size % self.num_heads == 0, "hidden_size must be divisible by num_attention_heads"
+
+          # This is using the qrouped-query attention where we have a different 
+          # number of heads for the keys and values and for the queries. 
+          # The keys and values are grouped together and each group is shared across multiple query heads. 
+          # This is the same as the grouped query attention used in Llama 2 and in Gemma. 
+          # It allows to reduce the memory usage of the attention mechanism while keeping the same number of query
+          #  heads which is important for the performance of the model.
+
+          self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias = config.attention_bias)
+          self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias = config.attention_bias)
+          self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias = config.attention_bias)
+          self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias = config.attention_bias)
+
+          self.rotary_embs = GemmaRotaryEmbedding(
+               self.head_dim,
+               max_position_embeddings = self.max_position_embeddings,
+               base = self.rope_theta
+          )
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
+
+
 class GemmaDecoderLayer(nn.Module):
      def __init__(self, config: GemmaConfig, layer_idx: int):
           super().__init__()
