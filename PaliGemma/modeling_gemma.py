@@ -148,10 +148,24 @@ class GemmaAttention(nn.Module):
           self.rotary_embs = GemmaRotaryEmbedding(
                self.head_dim,
                max_position_embeddings = self.max_position_embeddings,
-               base = self.rope_theta
+               base = self.rope_theta,
           )
 
+     def forward(
+               self, 
+               hidden_states: torch.Tensor,
+               attention_mask: Optional[torch.Tensor] = None,
+               position_ids: Optional[torch.LongTensor] = None,
+               kv_cache: Optional[KVCache] = None,
+               **kwargs,
+     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
           
+          
+          
+
+
+
+
 
 
 
