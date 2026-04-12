@@ -165,7 +165,27 @@ class GemmaAttention(nn.Module):
           value_states = self.v_proj(hidden_states)
           query_states = query_states.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1,2)
           key_states = key_states.view(batch_size, self.num_key_value_heads, self.head_dim).transpose(1,2)
-          value_states = value_states.view()
+          value_states = value_states.view (batch_size, seq_len, self.num_key_value_heads, self.head_dim).transpose(1,2)
+
+          # apply rotary positional embeddings to the query and key states
+          # the rotary positional embeddings are applied in place to save memory
+          # # [batch_size, seq_len, Head_dim], [batch_size, seq_len, head_dim]
+          # 
+          cos, sin = self.rotary_emb(value_states, position_ids, seq_len=None)
+          # [batch_size, Num_heads_q, seq_len, Head_dim] -> [batch_size, Num_heads_kV, seq_len, head_dim]
+
+          query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
+
+          if kv_cache is not None:
+               key_states, value_states = kv_cache.update(key_states, value_states, self.layer_idx)
+               
+
+
+
+
+
+
+
 
 
           
