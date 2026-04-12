@@ -241,10 +241,21 @@ class GemmaAttention(nn.Module):
             # Compute the attention output
           attn_output = torch.matmul(attn_weights, value_states)
 
+          if attn_output.size() != (batch_size, self.num_heads, seq_len, self.head_dim):
+               raise ValueError(
+                    f"attn_output should be of size {(batch_size, self.num_heads, seq_len, self.head_dim)}, but is"
+                     f" of size {attn_output.size()}"
+               )
+          
+          # make sure the sequence length is the second dimension
+          attn_output = attn_output.transpose(1, 2).contiguous()
+          attn_output = attn_output.view(batch_size, seq_len, -1)
 
+          # multiply by wo_proj to get the final output of the attention mechanism
+          # [batch_size, seq_len, hidden_size]
+          attn_output = self.o_proj(attn_output) 
 
-
-
+          return attn_output, attn_weights
 
 
 
