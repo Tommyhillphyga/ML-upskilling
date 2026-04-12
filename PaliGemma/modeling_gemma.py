@@ -19,7 +19,34 @@ class KVCache():
           return 0
         else:
              return self.key_cache[0].shape[-2] # the sequence length of the keys is the number of items in the cache
+        
+     def update(
+               self,
+               key_states: torch.Tensor,
+               value_states: torch.Tensor,
+               layer_idx: int, ) -> Tuple[torch.Tensor, torch.Tensor]:
+          
+          if len(self.key_cache) <= layer_idx:
+               # if we never added anything to the KV-Cache of this layer, we just create it
+               self.key_cache.append(key_states)
+               self.value_cache.append(value_states)
+
+          else:
+               self.key_cache[layer_idx] = torch.cat([self.key_cache[layer_idx], key_states], dim=-2)     
+               self.value_cache[layer_idx] = torch.cat([self.value_cache[layer_idx], value_states], dim=-2)   
+
+
+          return self.key_cache[layer_idx], self.value_cache[layer_idx]
      
+# repeak kv repeates the number of missing heads for the query and values
+def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
+     batch, num_key_value_heads, slen, head_dim = hidden_states.shape
+     if n_rep == 1:
+          return hidden_states
+     hidden_states = hidden_states[:, :, None, :, :].expand(batch, num_key_value_heads, n_rep, slen, head_dim)
+     return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
+
+
 
 class GemmaConfig():
      
@@ -193,6 +220,11 @@ class GemmaAttention(nn.Module):
 
           if kv_cache is not None:
                key_states, value_states = kv_cache.update(key_states, value_states, self.layer_idx)
+
+          key_states = repeat_kv(key_states, self.num_key_value_group)
+          value_states = repeat_kv(value_states, self.num_key_value_groups)
+
+
 
 
 
