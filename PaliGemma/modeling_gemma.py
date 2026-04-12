@@ -233,6 +233,13 @@ class GemmaAttention(nn.Module):
           attn_weights = attn_weights + attention_mask
 
           #Apply the softmax
+          # [batch_size, num_heads_q, seq_len, seq_len_KV]
+          attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
+          # Apply attention dropout
+          attn_weights = nn.functional.dropout(attn_weights, p= self.attention_dropout, training=self.training)
+
+            # Compute the attention output
+          attn_output = torch.matmul(attn_weights, value_states)
 
 
 
