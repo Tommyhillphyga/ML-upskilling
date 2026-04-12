@@ -221,44 +221,24 @@ class GemmaAttention(nn.Module):
           if kv_cache is not None:
                key_states, value_states = kv_cache.update(key_states, value_states, self.layer_idx)
 
+
+          # Repeat the key and values to match the number of heads of the query
           key_states = repeat_kv(key_states, self.num_key_value_group)
           value_states = repeat_kv(value_states, self.num_key_value_groups)
 
+          #Perform the calculation of the attention scores
+          attn_weights = torch.matmul(query_states, key_states.transpoose(2, 3)) / math.sqrt(self.head_dim)
+
+          assert attention_mask is not None
+          attn_weights = attn_weights + attention_mask
+
+          #Apply the softmax
 
 
 
 
 
 
-
-
-
-
-
-
-          
-          
-
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
 
 
 class GemmaDecoderLayer(nn.Module):
