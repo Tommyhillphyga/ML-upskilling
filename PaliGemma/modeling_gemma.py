@@ -6,6 +6,21 @@ import math
 from modeling_siglip import SiglipVisionConfig, SiglipVisionModel
 
 
+#create the kvcache class inform of a buffer that store the keys and 
+# values of the attention mechanism for each layer.
+
+class KVCache():
+     def __init__(self) -> None:
+          self.key_cache = List[torch.Tensor] = []
+          self.value_cache = List[torch.Tensor] = []
+
+     def num_items(self) -> int:
+        if len(self.key_cache) ==0:
+          return 0
+        else:
+             return self.key_cache[0].shape[-2] # the sequence length of the keys is the number of items in the cache
+     
+
 class GemmaConfig():
      
      def __init__(
@@ -178,7 +193,8 @@ class GemmaAttention(nn.Module):
 
           if kv_cache is not None:
                key_states, value_states = kv_cache.update(key_states, value_states, self.layer_idx)
-               
+
+
 
 
 
