@@ -287,7 +287,20 @@ class GemmaRotaryEmbedding(nn.Module):
           with torch.autocast(device_type=device_type, enabled=False):
                # multiply each theta by the position (which is the argment of the sin and cos function)
                # freqs: [batch_size, head_dim, // 2. 1] @ [batch_size, 1, seq_len] --> [batch_size, seq_len, head_dim // 2]
-               
+
+               freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1,2)
+               # emb: [batch_size, seq_len, head_dim]
+               emb = torch.cat((freqs, freqs), dim=-1)
+
+               #cos, sin: [batch_size, seq_len, head_dim]
+               cos = emb.cos()
+               sin = emb.sin()
+
+          return cos.to(dtype=x.dtype), sin.to(dtype=x.dtype)
+
+        
+            
+
 
 
 class GemmaDecoderLayer(nn.Module):
