@@ -3,9 +3,33 @@ import fire
 from PIL import Image
 
 
-from modeling_gemma import KVCache, PaliGemmaForConditionalGenerationL
+from modeling_gemma import KVCache, PaliGemmaForConditionalGeneration
 from processing_paligemma import PaliGemmaProcessor
 from utils import load_hf_model
+
+
+def test_inference(
+        model: PaliGemmaForConditionalGeneration,
+        processor: PaliGemmaProcessor,
+        device: str,
+        prompt: str,
+        image_file_path: str,
+        max_tokens_to_generate: int,
+        temperature: float,
+        top_p: float,
+        do_sample: bool,
+
+):
+    model_inputs = get_model_inputs(processor, prompt, image_file_path, device)
+    # Process the input prompt and image
+    input_ids = model_inputs["input_ids"]
+    attention_mask = model_inputs["attention_mask"]
+    pixel_values = model_inputs["pixel_values"]
+
+    kv_cache = KVCache()
+    
+   
+
 
 
 
