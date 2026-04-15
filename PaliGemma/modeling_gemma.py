@@ -284,12 +284,12 @@ class GemmaRotaryEmbedding(nn.Module):
           device_type = x.device.type
           device_type = device_type if isinstance(device_type, str) and device_type != "mps" else "cpu"
 
-          with torch.autocast(device_type=device_type, enabled=False):
+          with torch.autocast(device_type=device_type, enabled=False):   # Autocast for mixed precision 
                # multiply each theta by the position (which is the argment of the sin and cos function)
                # freqs: [batch_size, head_dim, // 2. 1] @ [batch_size, 1, seq_len] --> [batch_size, seq_len, head_dim // 2]
 
-               freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1,2)
-               # emb: [batch_size, seq_len, head_dim]
+               freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
+               # emb: [batch_size, seq_len, head_dim] 
                emb = torch.cat((freqs, freqs), dim=-1)
 
                #cos, sin: [batch_size, seq_len, head_dim]
@@ -297,10 +297,32 @@ class GemmaRotaryEmbedding(nn.Module):
                sin = emb.sin()
 
           return cos.to(dtype=x.dtype), sin.to(dtype=x.dtype)
+     
 
-        
-            
+def apply_rotary_pos_emb(q, k, cos, sin, unsqueeze_dim = 1): 
+     cos = cos.unsqueeze(unsqueeze_dim) # Add the head dimension
+     sin = sin.unsqueeze(unsqueeze_dim) # Add the head dimension
 
+     # Apply the formula (34) of the rotary positional encoding paper
+     q_embed = (q * cos) * (rotate_half(q) * sin)
+     k_embed = (k * cos) * (rotate_half(k) * sin)
+
+     return q_embed, k_embed 
+
+def rotate_half(x):
+     # Build the [-x2, x1, -x4, x3, ...] tensor for the sin part of the positional encoding
+
+     x1 = x[..., : x.shape[-1] // 2]    # Takes the first half of the last dimension
+     x2 = x[..., x.shape[-1] // 2 :]    # TAkes the second half of the last dimension
+
+     return torch.cat((-x2, x1), dim=-1) # Concatenate the two halves in the right order to get the rotated tensor
+
+
+
+
+
+
+     
 
 
 class GemmaDecoderLayer(nn.Module):
