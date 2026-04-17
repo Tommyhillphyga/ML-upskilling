@@ -1,0 +1,70 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="760" rx="28" fill="#F6F8FB"/>
+  <rect x="36" y="36" width="1328" height="688" rx="24" fill="#FFFFFF" stroke="#D7DEE8" stroke-width="2"/>
+
+  <text x="72" y="92" fill="#10233F" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">PaliGemma Inference Architecture</text>
+  <text x="72" y="126" fill="#4D5F7A" font-family="Arial, Helvetica, sans-serif" font-size="18">SigLIP vision encoder + multimodal projector + Gemma decoder with KV cache</text>
+
+  <rect x="86" y="188" width="248" height="104" rx="18" fill="#E9F4FF" stroke="#71AEEA" stroke-width="2"/>
+  <text x="118" y="228" fill="#0F3D68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Input Image</text>
+  <text x="118" y="260" fill="#335C84" font-family="Arial, Helvetica, sans-serif" font-size="17">RGB image loaded with PIL</text>
+
+  <rect x="388" y="170" width="288" height="140" rx="18" fill="#EDF7EE" stroke="#7DC68A" stroke-width="2"/>
+  <text x="418" y="212" fill="#1C5C2C" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">PaliGemmaProcessor</text>
+  <text x="418" y="244" fill="#356842" font-family="Arial, Helvetica, sans-serif" font-size="17">Resize, rescale, normalize</text>
+  <text x="418" y="270" fill="#356842" font-family="Arial, Helvetica, sans-serif" font-size="17">Build prompt with &lt;image&gt; tokens</text>
+
+  <rect x="730" y="170" width="286" height="140" rx="18" fill="#FFF6E9" stroke="#E6B66E" stroke-width="2"/>
+  <text x="760" y="212" fill="#7A4B05" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">SiglipVisionModel</text>
+  <text x="760" y="244" fill="#8A6224" font-family="Arial, Helvetica, sans-serif" font-size="17">Patch embedding + positional encoding</text>
+  <text x="760" y="270" fill="#8A6224" font-family="Arial, Helvetica, sans-serif" font-size="17">Vision transformer encoder</text>
+
+  <rect x="1070" y="170" width="248" height="140" rx="18" fill="#FFF0EF" stroke="#E69791" stroke-width="2"/>
+  <text x="1100" y="212" fill="#7A231B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700">Projector</text>
+  <text x="1100" y="244" fill="#88453E" font-family="Arial, Helvetica, sans-serif" font-size="17">Linear map from vision</text>
+  <text x="1100" y="270" fill="#88453E" font-family="Arial, Helvetica, sans-serif" font-size="17">hidden size to Gemma space</text>
+
+  <rect x="86" y="430" width="248" height="104" rx="18" fill="#F0ECFF" stroke="#9B89E6" stroke-width="2"/>
+  <text x="118" y="470" fill="#45307F" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Text Prompt</text>
+  <text x="118" y="502" fill="#5E4C9D" font-family="Arial, Helvetica, sans-serif" font-size="17">Question or caption prompt</text>
+
+  <rect x="388" y="412" width="288" height="140" rx="18" fill="#EEF5FF" stroke="#6FA9E6" stroke-width="2"/>
+  <text x="418" y="454" fill="#164671" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Tokenizer + Embeddings</text>
+  <text x="418" y="486" fill="#385D87" font-family="Arial, Helvetica, sans-serif" font-size="17">Text tokens + reserved image slots</text>
+  <text x="418" y="512" fill="#385D87" font-family="Arial, Helvetica, sans-serif" font-size="17">Gemma token embeddings</text>
+
+  <rect x="730" y="390" width="286" height="184" rx="18" fill="#F7F4EA" stroke="#BDAA69" stroke-width="2"/>
+  <text x="760" y="432" fill="#5A4A13" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Multimodal Merge</text>
+  <text x="760" y="464" fill="#73612A" font-family="Arial, Helvetica, sans-serif" font-size="17">Replace image token positions</text>
+  <text x="760" y="490" fill="#73612A" font-family="Arial, Helvetica, sans-serif" font-size="17">with projected image features</text>
+  <text x="760" y="516" fill="#73612A" font-family="Arial, Helvetica, sans-serif" font-size="17">Build causal mask + position ids</text>
+
+  <rect x="1070" y="390" width="248" height="184" rx="18" fill="#EAF8F5" stroke="#68B9A1" stroke-width="2"/>
+  <text x="1100" y="432" fill="#165445" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Gemma Decoder</text>
+  <text x="1100" y="464" fill="#327462" font-family="Arial, Helvetica, sans-serif" font-size="17">RMSNorm, RoPE, attention, MLP</text>
+  <text x="1100" y="490" fill="#327462" font-family="Arial, Helvetica, sans-serif" font-size="17">Autoregressive generation</text>
+  <text x="1100" y="516" fill="#327462" font-family="Arial, Helvetica, sans-serif" font-size="17">KV cache for fast decoding</text>
+
+  <rect x="1070" y="618" width="248" height="70" rx="18" fill="#10233F"/>
+  <text x="1120" y="662" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Generated Text</text>
+
+  <path d="M334 240H388" stroke="#46698F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M676 240H730" stroke="#46698F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1016 240H1070" stroke="#46698F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M334 482H388" stroke="#6A58A4" stroke-width="4" stroke-linecap="round"/>
+  <path d="M676 482H730" stroke="#6A58A4" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1194 310V350" stroke="#A76159" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1016 482H1070" stroke="#567A67" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1194 574V618" stroke="#2D6D60" stroke-width="4" stroke-linecap="round"/>
+
+  <polygon points="388,240 374,232 374,248" fill="#46698F"/>
+  <polygon points="730,240 716,232 716,248" fill="#46698F"/>
+  <polygon points="1070,240 1056,232 1056,248" fill="#46698F"/>
+  <polygon points="388,482 374,474 374,490" fill="#6A58A4"/>
+  <polygon points="730,482 716,474 716,490" fill="#6A58A4"/>
+  <polygon points="1194,350 1186,336 1202,336" fill="#A76159"/>
+  <polygon points="1070,482 1056,474 1056,490" fill="#567A67"/>
+  <polygon points="1194,618 1186,604 1202,604" fill="#2D6D60"/>
+
+  <text x="731" y="604" fill="#4D5F7A" font-family="Arial, Helvetica, sans-serif" font-size="16">Combined sequence of image and text embeddings</text>
+</svg>
