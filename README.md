@@ -20,7 +20,7 @@ Beyond code, this repository also serves as a **learning log** where I track pro
 * Build intuition around **performance-critical components** (e.g., attention, memory, compute)
 * Create a public record of **consistent ML upskilling**
 
----
+--- 
 
 ## 🧠 What I'm Studying
 
@@ -103,6 +103,11 @@ The training script is structured to resemble real-world ML code:
 * Configurable hyperparameters
 
 ---
+
+## PaliGemma 
+
+A compact PyTorch implementation of a PaliGemma-style multimodal inference pipeline. This project combines a SigLIP-inspired vision encoder with a Gemma decoder-only language model to answer text prompts conditioned on an input image.
+
 
 ## 📈 Study Plan & Progress Tracking
 
