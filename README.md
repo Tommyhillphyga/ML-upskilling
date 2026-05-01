@@ -46,8 +46,11 @@ ML-upskilling/
 │
 ├── flash_attention/
 │   └── forward.py        # PyTorch implementation of Flash Attention (forward pass)
+     ── train.py
+|
+|__ Paligemma-Pytorch
 │
-├── train.py              # Training script for ViT
+├              # Training script for ViT
 ├── requirements.txt
 └── README.md
 ```
@@ -72,7 +75,6 @@ The architecture is written to be:
 * Readable
 * Easy to extend (e.g., different attention variants, depth, heads)
 
-This helps reinforce *how ViTs work internally*, not just how to use them from libraries.
 
 ---
 
@@ -167,4 +169,3 @@ GitHub: [https://github.com/Tommyhillphyga](https://github.com/Tommyhillphyga)
 
 ---
 
-> *This repo is intentionally iterative — clarity and correctness improve with time.*
