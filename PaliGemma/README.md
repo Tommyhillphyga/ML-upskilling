@@ -1,4 +1,4 @@
-# PaliGemma
+# PaliGemma-PyTorch
 
 A compact PyTorch implementation of a PaliGemma-style multimodal inference pipeline. This project combines a SigLIP-inspired vision encoder with a Gemma decoder-only language model to answer text prompts conditioned on an input image.
 
