@@ -135,6 +135,8 @@ Future additions may include:
 * Training optimizations (mixed precision, gradient checkpointing)
 * ML systems topics (profiling, memory analysis)
 * Notes linking implementations to research papers
+* Triton inference server and MLOPs (Mandetory)
+
 
 ---
 
