@@ -146,6 +146,7 @@ Future additions may include:
 * PyTorch
 * NumPy
 * CUDA (conceptually, where relevant)
+triton inclusive
 
 ---
 
