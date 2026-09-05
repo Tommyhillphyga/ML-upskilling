@@ -31,6 +31,7 @@ This repo reflects hands-on learning in areas such as:
 * Efficient attention (Flash Attention, memory-aware computation)
 * Model initialization, forward passes, and optimization
 * Reading and implementing research papers
+vechile tagging system 
 
 ---
 
